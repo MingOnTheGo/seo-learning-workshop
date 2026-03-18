@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识点详情 - SEO学习工坊</title>
+
+  <!-- SEO -->
+  <meta name="description" content="查看SEO知识点详细说明">
+  <link rel="canonical" href="https://seo-learning.vercel.app/root-detail.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">📊</span>
+        <span>SEO学习工坊</span>
+      </a>
+      <nav class="nav">
+        <a href="learn.html">学习</a>
+        <a href="flashcard.html">闪卡</a>
+        <a href="roots.html">索引</a>
+        <a href="progress.html">进度</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Detail Container -->
+  <div class="container">
+    <div class="learn-container">
+      <a href="roots.html" class="btn btn-secondary" style="margin-bottom: var(--space-3);">← 返回索引</a>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="learn-origin" id="detailOrigin">加载中...</span>
+        </div>
+
+        <div class="card-body">
+          <h1 id="detailRoot" style="margin-bottom: var(--space-3);">加载中...</h1>
+          <p id="detailMeaning" style="font-size: 1.25rem; color: var(--color-primary); margin-bottom: var(--space-4);">加载中...</p>
+          <p id="detailDescription" style="line-height: 1.8;">加载中...</p>
+        </div>
+
+        <!-- Examples Section -->
+        <div class="card-body" style="border-top: 1px solid var(--color-border);">
+          <h3>应用案例</h3>
+          <div id="detailExamples" style="margin-top: var(--space-3);"></div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="card-body" style="border-top: 1px solid var(--color-border);">
+          <h3>小测验</h3>
+          <div class="quiz-question">
+            <p id="detailQuizQuestion" style="margin-bottom: var(--space-3);">加载中...</p>
+            <div class="quiz-options" id="detailQuizOptions"></div>
+            <div class="quiz-explanation" id="detailQuizExplanation" style="display: none; margin-top: var(--space-3);"></div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-secondary" id="detailMarkMasteredBtn" onclick="toggleMastered()">✓ 标记为已掌握</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/wordData.js"></script>
+  <script src="js/storage.js"></script>
+  <script>
+    let currentCard = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof WordRoots === 'undefined') {
+        showToast('数据加载失败', 'error');
+        return;
+      }
+
+      // Get ID from URL or localStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = parseInt(urlParams.get('id')) || parseInt(localStorage.getItem('selectedCardId'));
+
+      if (id) {
+        loadCard(id);
+      } else {
+        showToast('未找到知识点', 'error');
+        setTimeout(() => window.location.href = 'roots.html', 2000);
+      }
+    });
+
+    // Load card
+    function loadCard(id) {
+      currentCard = WordRoots.find(c => c.id === id);
+      if (!currentCard) {
+        showToast('知识点不存在', 'error');
+        setTimeout(() => window.location.href = 'roots.html', 2000);
+        return;
+      }
+
+      // Update UI
+      document.getElementById('detailOrigin').textContent = currentCard.origin;
+      document.getElementById('detailRoot').textContent = currentCard.root;
+      document.getElementById('detailMeaning').textContent = currentCard.meaning;
+      document.getElementById('detailDescription').textContent = currentCard.description;
+
+      // Load examples
+      const examplesContainer = document.getElementById('detailExamples');
+      examplesContainer.innerHTML = '';
+      currentCard.examples.forEach(example => {
+        const div = document.createElement('div');
+        div.className = 'example-item';
+        div.innerHTML = `
+          <div class="example-word">${example.word}</div>
+          <div style="color: var(--color-text-light);">${example.meaning}</div>
+          <div style="margin-top: 0.5rem;">${example.explanation}</div>
+        `;
+        examplesContainer.appendChild(div);
+      });
+
+      // Load quiz
+      if (currentCard.quiz) {
+        document.getElementById('detailQuizQuestion').textContent = currentCard.quiz.question;
+        const optionsContainer = document.getElementById('detailQuizOptions');
+        optionsContainer.innerHTML = '';
+        document.getElementById('detailQuizExplanation').style.display = 'none';
+
+        currentCard.quiz.options.forEach((option, i) => {
+          const div = document.createElement('div');
+          div.className = 'quiz-option';
+          div.textContent = option;
+          div.onclick = () => selectOption(div, i, currentCard.quiz.correctAnswer);
+          optionsContainer.appendChild(div);
+        });
+      } else {
+        document.getElementById('detailQuizQuestion').textContent = '暂无测验';
+        document.getElementById('detailQuizOptions').innerHTML = '';
+      }
+
+      // Update mastered button
+      updateMasteredButton();
+    }
+
+    // Select quiz option
+    function selectOption(element, index, correctAnswer) {
+      const options = document.querySelectorAll('#detailQuizOptions .quiz-option');
+      options.forEach(opt => {
+        opt.onclick = null;
+        opt.classList.remove('selected');
+      });
+
+      element.classList.add('selected');
+
+      if (index === correctAnswer) {
+        element.classList.add('correct');
+        showToast('回答正确！', 'success');
+      } else {
+        element.classList.add('incorrect');
+        options[correctAnswer].classList.add('correct');
+        showToast('回答错误，正确答案已标注', 'error');
+      }
+
+      // Show explanation
+      const explanation = document.getElementById('detailQuizExplanation');
+      explanation.innerHTML = `<strong>解析：</strong>${currentCard.description}`;
+      explanation.style.display = 'block';
+    }
+
+    // Toggle mastered
+    function toggleMastered() {
+      if (!currentCard) return;
+
+      const isMastered = Storage.isMastered(currentCard.id);
+
+      if (Storage.setMastered(currentCard.id, !isMastered)) {
+        updateMasteredButton();
+        showToast(isMastered ? '已取消标记' : '已标记为已掌握', 'success');
+      } else {
+        showToast('操作失败', 'error');
+      }
+    }
+
+    // Update mastered button
+    function updateMasteredButton() {
+      if (!currentCard) return;
+
+      const isMastered = Storage.isMastered(currentCard.id);
+      const btn = document.getElementById('detailMarkMasteredBtn');
+
+      if (isMastered) {
+        btn.textContent = '✓ 已掌握';
+        btn.classList.add('btn-primary');
+        btn.classList.remove('btn-secondary');
+      } else {
+        btn.textContent = '✓ 标记为已掌握';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+      }
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学习进度 - SEO学习工坊</title>
+
+  <!-- SEO -->
+  <meta name="description" content="查看SEO学习进度和已掌握的知识点">
+  <meta name="keywords" content="学习进度,SEO学习成果">
+  <link rel="canonical" href="https://seo-learning.vercel.app/progress.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="学习进度 - SEO学习工坊">
+  <meta property="og:description" content="查看学习进度">
+  <meta property="og:url" content="https://seo-learning.vercel.app/progress.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">📊</span>
+        <span>SEO学习工坊</span>
+      </a>
+      <nav class="nav">
+        <a href="learn.html">学习</a>
+        <a href="flashcard.html">闪卡</a>
+        <a href="roots.html">索引</a>
+        <a href="progress.html" class="active">进度</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Progress Container -->
+  <div class="container section">
+    <h1 style="margin-bottom: var(--space-6);">学习进度</h1>
+
+    <!-- Progress Overview -->
+    <div class="progress-overview" id="progressOverview"></div>
+
+    <!-- Overall Progress -->
+    <div class="card" style="margin-bottom: var(--space-6);">
+      <div class="card-body">
+        <h2>总体进度</h2>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="overallProgressBar" style="width: 0%;"></div>
+        </div>
+        <p id="overallProgressText" style="margin-top: var(--space-2); color: var(--color-text-light);">0% 完成</p>
+      </div>
+    </div>
+
+    <!-- Mastered List -->
+    <h2 style="margin-bottom: var(--space-4);">已掌握的知识点</h2>
+    <div class="mastered-list" id="masteredList">
+      <p style="color: var(--color-text-lighter); text-align: center; padding: var(--space-4);">还没有标记任何知识点为已掌握</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="margin-top: var(--space-6); text-align: center;">
+      <button class="btn btn-secondary" onclick="clearProgress()">清除所有进度</button>
+      <a href="learn.html" class="btn btn-primary" style="margin-left: var(--space-2);">继续学习</a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/wordData.js"></script>
+  <script src="js/storage.js"></script>
+  <script>
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof WordRoots === 'undefined') {
+        showToast('数据加载失败', 'error');
+        return;
+      }
+
+      loadProgress();
+    });
+
+    // Load progress
+    function loadProgress() {
+      const stats = Storage.getStats(WordRoots.length);
+      const mastered = Storage.getMastered();
+      const percentage = Math.round((stats.mastered / stats.total) * 100);
+
+      // Update overview
+      const overview = document.getElementById('progressOverview');
+      overview.innerHTML = `
+        <div class="progress-stat">
+          <div class="progress-stat-value">${stats.mastered}</div>
+          <div class="progress-stat-label">已掌握</div>
+        </div>
+        <div class="progress-stat">
+          <div class="progress-stat-value">${stats.inProgress}</div>
+          <div class="progress-stat-label">进行中</div>
+        </div>
+        <div class="progress-stat">
+          <div class="progress-stat-value">${stats.total}</div>
+          <div class="progress-stat-label">总知识点</div>
+        </div>
+      `;
+
+      // Update progress bar
+      document.getElementById('overallProgressBar').style.width = `${percentage}%`;
+      document.getElementById('overallProgressText').textContent = `${percentage}% 完成 (${stats.mastered}/${stats.total})`;
+
+      // Update mastered list
+      const masteredList = document.getElementById('masteredList');
+      if (mastered.length > 0) {
+        masteredList.innerHTML = '';
+        mastered.forEach(id => {
+          const card = WordRoots.find(c => c.id === id);
+          if (card) {
+            const div = document.createElement('div');
+            div.className = 'mastered-item';
+            div.innerHTML = `
+              <div class="icon">✓</div>
+              <div>
+                <div style="font-weight: 600;">${card.root}</div>
+                <div style="color: var(--color-text-light); font-size: 0.875rem;">${card.meaning}</div>
+              </div>
+            `;
+            div.onclick = () => {
+              localStorage.setItem('selectedCardId', card.id);
+              window.location.href = `root-detail.html?id=${card.id}`;
+            };
+            div.style.cursor = 'pointer';
+            masteredList.appendChild(div);
+          }
+        });
+      }
+    }
+
+    // Clear progress
+    function clearProgress() {
+      if (confirm('确定要清除所有学习进度吗？此操作不可撤销。')) {
+        if (Storage.clearProgress()) {
+          loadProgress();
+          showToast('进度已清除', 'success');
+        } else {
+          showToast('清除失败', 'error');
+        }
+      }
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

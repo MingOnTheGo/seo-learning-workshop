@@ -1,0 +1,9 @@
+# Robots.txt for SEO学习工坊
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://seo-learning.vercel.app/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

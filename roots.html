@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识点索引 - SEO学习工坊</title>
+
+  <!-- SEO -->
+  <meta name="description" content="SEO知识点索引，搜索和筛选所有核心知识点">
+  <meta name="keywords" content="SEO索引,知识点查找,SEO词汇">
+  <link rel="canonical" href="https://seo-learning.vercel.app/roots.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="知识点索引 - SEO学习工坊">
+  <meta property="og:description" content="浏览所有SEO知识点">
+  <meta property="og:url" content="https://seo-learning.vercel.app/roots.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">📊</span>
+        <span>SEO学习工坊</span>
+      </a>
+      <nav class="nav">
+        <a href="learn.html">学习</a>
+        <a href="flashcard.html">闪卡</a>
+        <a href="roots.html" class="active">索引</a>
+        <a href="progress.html">进度</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Index Container -->
+  <div class="container section">
+    <h1 style="margin-bottom: var(--space-4);">知识点索引</h1>
+
+    <!-- Search -->
+    <div class="index-search">
+      <input type="text" id="searchInput" placeholder="搜索知识点..." oninput="filterCards()">
+    </div>
+
+    <!-- Filters -->
+    <div class="index-filters" id="filterButtons">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="mastered">已掌握</button>
+      <button class="filter-btn" data-filter="unmastered">未掌握</button>
+    </div>
+
+    <!-- Grid -->
+    <div class="index-grid" id="cardGrid"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/wordData.js"></script>
+  <script src="js/storage.js"></script>
+  <script>
+    let currentFilter = 'all';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof WordRoots === 'undefined') {
+        showToast('数据加载失败', 'error');
+        return;
+      }
+
+      renderCards(WordRoots);
+
+      // Filter button events
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          currentFilter = this.dataset.filter;
+          filterCards();
+        });
+      });
+    });
+
+    // Render cards
+    function renderCards(cards) {
+      const grid = document.getElementById('cardGrid');
+      grid.innerHTML = '';
+
+      if (cards.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-lighter);">没有找到匹配的知识点</p>';
+        return;
+      }
+
+      cards.forEach(card => {
+        const div = document.createElement('div');
+        div.className = 'index-card';
+        if (Storage.isMastered(card.id)) {
+          div.classList.add('mastered');
+        }
+
+        div.innerHTML = `
+          <span class="index-card-origin">${card.origin}</span>
+          <div class="index-card-root">${card.root}</div>
+          <div class="index-card-meaning">${card.meaning}</div>
+        `;
+
+        div.onclick = () => openDetail(card.id);
+        grid.appendChild(div);
+      });
+    }
+
+    // Filter cards
+    function filterCards() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      let filtered = WordRoots;
+
+      // Search filter
+      if (searchTerm) {
+        filtered = filtered.filter(card =>
+          card.root.toLowerCase().includes(searchTerm) ||
+          card.meaning.toLowerCase().includes(searchTerm) ||
+          card.description.toLowerCase().includes(searchTerm) ||
+          card.origin.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      // Status filter
+      if (currentFilter === 'mastered') {
+        filtered = filtered.filter(card => Storage.isMastered(card.id));
+      } else if (currentFilter === 'unmastered') {
+        filtered = filtered.filter(card => !Storage.isMastered(card.id));
+      }
+
+      renderCards(filtered);
+    }
+
+    // Open detail page
+    function openDetail(id) {
+      const card = WordRoots.find(c => c.id === id);
+      if (card) {
+        localStorage.setItem('selectedCardId', id);
+        window.location.href = `root-detail.html?id=${id}`;
+      }
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

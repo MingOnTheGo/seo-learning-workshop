@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>闪卡 - SEO学习工坊</title>
+
+  <!-- SEO -->
+  <meta name="description" content="使用闪卡快速记忆SEO知识点，支持键盘快捷键操作">
+  <meta name="keywords" content="SEO闪卡,快速复习,SEO记忆">
+  <link rel="canonical" href="https://seo-learning.vercel.app/flashcard.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="闪卡 - SEO学习工坊">
+  <meta property="og:description" content="快速记忆SEO知识点">
+  <meta property="og:url" content="https://seo-learning.vercel.app/flashcard.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">📊</span>
+        <span>SEO学习工坊</span>
+      </a>
+      <nav class="nav">
+        <a href="learn.html">学习</a>
+        <a href="flashcard.html" class="active">闪卡</a>
+        <a href="roots.html">索引</a>
+        <a href="progress.html">进度</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Flashcard Container -->
+  <div class="container">
+    <div class="flashcard-progress">
+      <span id="cardProgress">0 / 30</span>
+      <div class="flashcard-controls">
+        <button class="btn btn-secondary" onclick="shuffleCards()">🔀 随机</button>
+        <button class="btn btn-secondary" onclick="resetCards()">🔄 重置</button>
+      </div>
+    </div>
+
+    <div class="flashcard-container">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <!-- Front -->
+        <div class="flashcard-front">
+          <span class="flashcard-origin" id="cardOrigin">加载中...</span>
+          <h1 class="flashcard-root" id="cardRoot">加载中...</h1>
+          <p class="flashcard-hint">点击翻转 或 按空格键</p>
+        </div>
+
+        <!-- Back -->
+        <div class="flashcard-back">
+          <p id="cardMeaning">加载中...</p>
+          <p class="flashcard-hint">点击翻转 或 按空格键</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flashcard-controls">
+      <button class="btn btn-secondary btn-large" onclick="prevCard()">← 上一个</button>
+      <button class="btn btn-primary btn-large" onclick="nextCard()">下一个 →</button>
+    </div>
+
+    <div class="flashcard-controls">
+      <button class="btn btn-secondary" onclick="markMastered()">
+        <span id="masteredBtnText">✓ 标记为已掌握</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/wordData.js"></script>
+  <script src="js/storage.js"></script>
+  <script>
+    let cards = [];
+    let currentCardIndex = 0;
+    let isFlipped = false;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof WordRoots === 'undefined') {
+        showToast('数据加载失败', 'error');
+        return;
+      }
+
+      // Clone cards array to avoid modifying original
+      cards = [...WordRoots];
+      loadCard(0);
+    });
+
+    // Load card
+    function loadCard(index) {
+      if (cards.length === 0) return;
+
+      const card = cards[index];
+
+      document.getElementById('cardOrigin').textContent = card.origin;
+      document.getElementById('cardRoot').textContent = card.root;
+      document.getElementById('cardMeaning').textContent = card.meaning;
+      document.getElementById('cardProgress').textContent = `${index + 1} / ${cards.length}`;
+
+      // Reset flip state
+      isFlipped = false;
+      document.getElementById('flashcard').classList.remove('flipped');
+
+      // Update mastered button
+      updateMasteredButton();
+    }
+
+    // Flip card
+    function flipCard() {
+      isFlipped = !isFlipped;
+      document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
+    }
+
+    // Next card
+    function nextCard() {
+      currentCardIndex = (currentCardIndex + 1) % cards.length;
+      loadCard(currentCardIndex);
+    }
+
+    // Previous card
+    function prevCard() {
+      currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length;
+      loadCard(currentCardIndex);
+    }
+
+    // Shuffle cards
+    function shuffleCards() {
+      // Fisher-Yates shuffle
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      currentCardIndex = 0;
+      loadCard(0);
+      showToast('已随机打乱', 'success');
+    }
+
+    // Reset cards
+    function resetCards() {
+      cards = [...WordRoots];
+      currentCardIndex = 0;
+      loadCard(0);
+      showToast('已重置顺序', 'success');
+    }
+
+    // Mark mastered
+    function markMastered() {
+      const card = cards[currentCardIndex];
+      const isMastered = Storage.isMastered(card.id);
+
+      if (Storage.setMastered(card.id, !isMastered)) {
+        updateMasteredButton();
+        showToast(isMastered ? '已取消标记' : '已标记为已掌握', 'success');
+      }
+    }
+
+    // Update mastered button
+    function updateMasteredButton() {
+      const card = cards[currentCardIndex];
+      const isMastered = Storage.isMastered(card.id);
+      const btn = document.getElementById('masteredBtnText');
+
+      if (isMastered) {
+        btn.textContent = '✓ 已掌握';
+      } else {
+        btn.textContent = '✓ 标记为已掌握';
+      }
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+
+    // Keyboard controls
+    document.addEventListener('keydown', function(e) {
+      if (e.key === ' ') {
+        e.preventDefault();
+        flipCard();
+      } else if (e.key === 'ArrowLeft') {
+        prevCard();
+      } else if (e.key === 'ArrowRight') {
+        nextCard();
+      } else if (e.key === 'r') {
+        shuffleCards();
+      }
+    });
+  </script>
+</body>
+</html>
