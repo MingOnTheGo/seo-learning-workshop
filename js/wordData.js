@@ -292,7 +292,7 @@ const WordRoots = [
     root: "HTTPS",
     origin: "技术SEO",
     meaning: "安全超文本传输协议，加密网站与用户之间的通信",
-    description: "HTTPS是HTTP的安全版本，通过SSL/TLS加密网站与用户浏览器之间的通信。Google将HTTPS作为排名因素，HTTPS网站在同等条件下排名更高。HTTPS不仅提升SEO，还增强用户信任和安全，保护用户数据不被窃取或篡改。HTTPS已成为现代网站的标准配置，大多数浏览器会标记非HTTPS网站为"不安全"。",
+    description: "HTTPS是HTTP的安全版本，通过SSL/TLS加密网站与用户浏览器之间的通信。Google将HTTPS作为排名因素，HTTPS网站在同等条件下排名更高。HTTPS不仅提升SEO，还增强用户信任和安全，保护用户数据不被窃取或篡改。HTTPS已成为现代网站的标准配置，大多数浏览器会标记非HTTPS网站为“不安全”。",
     examples: [
       {
         word: "SSL证书安装",
@@ -484,13 +484,13 @@ const WordRoots = [
     root: "内容密度",
     origin: "内容SEO",
     meaning: "内容中关键词和相关术语的出现频率和分布",
-    description: "内容密度指内容中关键词、相关术语和主题相关词汇的分布和频率。虽然传统的"关键词密度"已不再是主要排名因素，但内容的语义相关性仍然重要。LSI（潜在语义索引）相关术语、同义词和相关主题词汇的自然使用，可以帮助搜索引擎更好地理解内容的主题和深度。应该避免关键词堆砌，专注于自然、全面的内容创作。",
+    description: "内容密度指内容中关键词、相关术语和主题相关词汇的分布和频率。虽然传统的“关键词密度”已不再是主要排名因素，但内容的语义相关性仍然重要。LSI（潜在语义索引）相关术语、同义词和相关主题词汇的自然使用，可以帮助搜索引擎更好地理解内容的主题和深度。应该避免关键词堆砌，专注于自然、全面的内容创作。",
     examples: [
       {
         word: "LSI关键词使用",
         meaning: "自然使用相关术语",
         breakdown: { root: "内容密度" },
-        explanation: "在内容中自然地使用与主题相关的术语、同义词和概念，如"搜索引擎优化"相关"SERP"、"关键词"、"排名"等。"
+        explanation: "在内容中自然地使用与主题相关的术语、同义词和概念，如“搜索引擎优化”相关“SERP”、“关键词”、“排名”等。"
       },
       {
         word: "主题完整性",
@@ -528,7 +528,7 @@ const WordRoots = [
         word: "图片文件名",
         meaning: "使用描述性名称",
         breakdown: { root: "图片优化" },
-        explanation: "使用描述性的、包含关键词的文件名（如"seo-checklist.jpg"）而非默认的"IMG1234.jpg"。"
+        explanation: "使用描述性的、包含关键词的文件名（如“seo-checklist.jpg”）而非默认的“IMG1234.jpg”。"
       },
       {
         word: "图片格式选择",
@@ -566,7 +566,7 @@ const WordRoots = [
         word: "本地关键词优化",
         meaning: "覆盖本地搜索",
         breakdown: { root: "本地SEO" },
-        explanation: "在内容和标题中使用地理相关关键词，如"北京SEO服务"、"上海网站优化"，吸引本地客户搜索。"
+        explanation: "在内容和标题中使用地理相关关键词，如“北京SEO服务”、“上海网站优化”，吸引本地客户搜索。"
       }
     ],
     quiz: {
@@ -618,19 +618,19 @@ const WordRoots = [
         word: "具体问题关键词",
         meaning: "回答用户问题",
         breakdown: { root: "长尾关键词" },
-        explanation: "针对具体问题创作内容，如"如何在WordPress中设置301重定向"，匹配明确的用户搜索意图。"
+        explanation: "针对具体问题创作内容，如“如何在WordPress中设置301重定向”，匹配明确的用户搜索意图。"
       },
       {
         word: "细分市场关键词",
         meaning: "专注细分领域",
         breakdown: { root: "长尾关键词" },
-        explanation: "针对细分市场优化，如"跨境电商独立站SEO优化"，而非竞争激烈的"电商SEO"。"
+        explanation: "针对细分市场优化，如“跨境电商独立站SEO优化”，而非竞争激烈的“电商SEO”。"
       },
       {
         word: "地域限定关键词",
         meaning: "本地化优化",
         breakdown: { root: "长尾关键词" },
-        explanation: "添加地域限定，如"深圳网站建设公司SEO服务"，吸引本地搜索流量。"
+        explanation: "添加地域限定，如“深圳网站建设公司SEO服务”，吸引本地搜索流量。"
       }
     ],
     quiz: {
@@ -714,19 +714,19 @@ const WordRoots = [
         word: "搜索查询分析",
         meaning: "了解用户搜索行为",
         breakdown: { root: "GSC" },
-        explanation: "通过"效果"报告查看用户通过哪些关键词找到网站、展示次数、点击次数和点击率，优化内容策略。"
+        explanation: "通过“效果”报告查看用户通过哪些关键词找到网站、展示次数、点击次数和点击率，优化内容策略。"
       },
       {
         word: "覆盖问题监控",
         meaning: "发现索引问题",
         breakdown: { root: "GSC" },
-        explanation: "通过"覆盖"报告查看哪些页面被索引、哪些被排除、是否有错误，及时修复技术问题。"
+        explanation: "通过“覆盖”报告查看哪些页面被索引、哪些被排除、是否有错误，及时修复技术问题。"
       },
       {
         word: "核心网页指标检查",
         meaning: "评估页面体验",
         breakdown: { root: "GSC" },
-        explanation: "通过"核心网页指标"报告查看页面在LCP、FID、CLS方面的表现，识别需要优化的页面。"
+        explanation: "通过“核心网页指标”报告查看页面在LCP、FID、CLS方面的表现，识别需要优化的页面。"
       }
     ],
     quiz: {
@@ -900,13 +900,13 @@ const WordRoots = [
     root: "锚文本",
     origin: "链接建设",
     meaning: "链接中可点击的文本，帮助搜索引擎理解链接目标页面",
-    description: "锚文本是链接中用户看到并可点击的文本，对SEO很重要，因为它帮助搜索引擎理解链接目标页面的内容。锚文本应该描述性、相关且自然。过度使用完全匹配的关键词作为锚文本可能被视为操纵行为，可能导致惩罚。应该多样化锚文本，包括品牌词、通用词（"点击这里"）、URL和长尾短语等。",
+    description: "锚文本是链接中用户看到并可点击的文本，对SEO很重要，因为它帮助搜索引擎理解链接目标页面的内容。锚文本应该描述性、相关且自然。过度使用完全匹配的关键词作为锚文本可能被视为操纵行为，可能导致惩罚。应该多样化锚文本，包括品牌词、通用词（“点击这里”）、URL和长尾短语等。",
     examples: [
       {
         word: "描述性锚文本",
         meaning: "描述链接目标",
         breakdown: { root: "锚文本" },
-        explanation: "使用描述目标内容的锚文本，如"SEO优化技巧"而非"点击这里"，帮助搜索引擎理解链接。"
+        explanation: "使用描述目标内容的锚文本，如“SEO优化技巧”而非“点击这里”，帮助搜索引擎理解链接。"
       },
       {
         word: "锚文本多样化",
