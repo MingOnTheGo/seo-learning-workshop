@@ -1,0 +1,9 @@
+{
+  "name": "seo-learning-workshop",
+  "version": "1.0.0",
+  "description": "SEO学习工坊 - 搜索引擎优化学习网站",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'No build step needed'"
+  }
+}
